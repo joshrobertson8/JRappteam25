@@ -55,7 +55,7 @@ export class TravelService {
    * Retrieves all travel records.
    * @returns An array of all TravelRecord objects.
    */
-  static getAll(): TravelRecord[] {
+  static list(): TravelRecord[] {
     return this.records;
   }
 
@@ -65,7 +65,7 @@ export class TravelService {
    * @returns The TravelRecord with the matching ID.
    * @throws HTTPError if the record is not found.
    */
-  static getById(id: string): TravelRecord {
+  static get(id: string): TravelRecord {
     const record = this.records.find((r) => r.id === id);
     if (!record) {
       throw new HTTPError('Record not found', 404);
@@ -81,7 +81,7 @@ export class TravelService {
    * @throws HTTPError if the record is not found or validation fails.
    */
   static update(id: string, data: unknown): TravelRecord {
-    const record = this.getById(id);
+    const record = this.get(id);
     const validatedData = TravelRecordInputSchema.partial().safeParse(data);
     if (!validatedData.success) {
       const details = flattenZodErrors(validatedData.error);

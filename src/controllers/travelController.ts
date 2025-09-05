@@ -21,9 +21,9 @@ export function createRecord(req: Request, res: Response, next: NextFunction): v
  * @param req - Express request object.
  * @param res - Express response object.
  */
-export function getAllRecords(req: Request, res: Response, next: NextFunction): void {
+export function listRecords(req: Request, res: Response, next: NextFunction): void {
   try {
-    const records = TravelService.getAll();
+    const records = TravelService.list();
     res.status(200).json(records);
   } catch (error) {
     next(error);
@@ -35,9 +35,9 @@ export function getAllRecords(req: Request, res: Response, next: NextFunction): 
  * @param req - Express request object with ID in params.
  * @param res - Express response object.
  */
-export function getRecordById(req: Request, res: Response, next: NextFunction): void {
+export function getRecord(req: Request, res: Response, next: NextFunction): void {
   try {
-    const record = TravelService.getById(req.params.id);
+    const record = TravelService.get(req.params.id);
     res.status(200).json(record);
   } catch (error) {
     next(error);

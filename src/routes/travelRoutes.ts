@@ -1,15 +1,15 @@
 import { Router } from 'express';
-import { createRecord, getAllRecords, getRecordById, updateRecord, deleteRecord } from '../controllers/travelController';
+import { createRecord, getRecord, updateRecord, listRecords, deleteRecord } from '../controllers/travelController';
 
 const router = Router();
 
 router.post('/', createRecord);
 
-router.get('/', getAllRecords);
+router.get('/', listRecords);
 
-router.get('/:id', getRecordById);
+router.get('/:id', getRecord);
 
-router.put('/:id', updateRecord);
+router.patch('/:id', updateRecord);
 
 router.delete('/:id', deleteRecord);
 

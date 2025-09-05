@@ -38,7 +38,7 @@ describe('TravelService', () => {
     });
   });
 
-  describe('getAll', () => {
+  describe('list', () => {
     it('should return all records', () => {
       const data1 = { destinationName: 'Paris', country: 'France', visitDate: '2023-07-15', rating: 5 };
       const data2 = { destinationName: 'Tokyo', country: 'Japan', visitDate: '2023-08-20', rating: 4 };
@@ -46,31 +46,31 @@ describe('TravelService', () => {
       TravelService.create(data1);
       TravelService.create(data2);
 
-      const records = TravelService.getAll();
+      const records = TravelService.list();
       expect(records).toHaveLength(2);
       expect(records[0].destinationName).toBe('Paris');
       expect(records[1].destinationName).toBe('Tokyo');
     });
 
     it('should return empty array if no records', () => {
-      const records = TravelService.getAll();
+      const records = TravelService.list();
       expect(records).toEqual([]);
     });
   });
 
-  describe('getById', () => {
+  describe('get', () => {
     it('should return the record with matching ID', () => {
       const data = { destinationName: 'Paris', country: 'France', visitDate: '2023-07-15', rating: 5 };
       const created = TravelService.create(data);
 
-      const record = TravelService.getById(created.id);
+      const record = TravelService.get(created.id);
       expect(record.id).toBe(created.id);
       expect(record.destinationName).toBe('Paris');
     });
 
     it('should throw error if record not found', () => {
-      expect(() => TravelService.getById('non-existent-id')).toThrow(HTTPError);
-      expect(() => TravelService.getById('non-existent-id')).toThrow('Record not found');
+      expect(() => TravelService.get('non-existent-id')).toThrow(HTTPError);
+      expect(() => TravelService.get('non-existent-id')).toThrow('Record not found');
     });
   });
 
@@ -107,8 +107,8 @@ describe('TravelService', () => {
 
       TravelService.delete(created.id);
 
-      expect(() => TravelService.getById(created.id)).toThrow(HTTPError);
-      expect(TravelService.getAll()).toHaveLength(0);
+      expect(() => TravelService.get(created.id)).toThrow(HTTPError);
+      expect(TravelService.list()).toHaveLength(0);
     });
 
     it('should throw error if record not found', () => {

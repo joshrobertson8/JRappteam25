@@ -71,7 +71,7 @@ describe('Travel Routes Integration', () => {
     });
   });
 
-  describe('PUT /api/travel-records/:id', () => {
+  describe('PATCH /api/travel-records/:id', () => {
     it('should update a record', async () => {
       const createResponse = await request(app).post('/api/travel-records').send({
         destinationName: 'Berlin',
@@ -81,7 +81,7 @@ describe('Travel Routes Integration', () => {
       });
 
       const id = createResponse.body.id;
-      const response = await request(app).put(`/api/travel-records/${id}`).send({ rating: 5, notes: 'Updated' }).expect(200);
+      const response = await request(app).patch(`/api/travel-records/${id}`).send({ rating: 5, notes: 'Updated' }).expect(200);
 
       expect(response.body.rating).toBe(5);
       expect(response.body.notes).toBe('Updated');

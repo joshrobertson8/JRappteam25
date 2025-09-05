@@ -8,7 +8,7 @@ app.use(express.json());
 
 app.use('/api/travel-records', travelRoutes);
 
-app.use((error: any, req: Request, res: Response) => {
+app.use((error: any, req: Request, res: Response, next: NextFunction) => {
   if (error instanceof HTTPError) {
     res.status(error.statusCode).json({
       error: error.message,
