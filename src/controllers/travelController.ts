@@ -41,6 +41,7 @@ export function getRecordById(req: Request, res: Response, next: NextFunction): 
     res.status(200).json(record);
   } catch (error) {
     next(error);
+  }
 }
 
 /**
@@ -53,7 +54,8 @@ export function updateRecord(req: Request, res: Response, next: NextFunction): v
     const updatedRecord = TravelService.update(req.params.id, req.body);
     res.status(200).json(updatedRecord);
   } catch (error) {
-   next(error)
+    next(error);
+  }
 }
 
 /**
@@ -66,5 +68,6 @@ export function deleteRecord(req: Request, res: Response, next: NextFunction): v
     TravelService.delete(req.params.id);
     res.status(204).send();
   } catch (error) {
-   next
+    next(error);
+  }
 }
