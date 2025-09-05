@@ -7,19 +7,12 @@ import { HTTPError } from '../middleware/httpError';
  * @param req - Express request object containing the record data in body.
  * @param res - Express response object.
  */
-export function createRecord(req: Request, res: Response): void {
+export function createRecord(req: Request, res: Response, next: NextFunction): void {
   try {
     const newRecord = TravelService.create(req.body);
     res.status(201).json(newRecord);
   } catch (error) {
-    if (error instanceof HTTPError) {
-      res.status(error.statusCode).json({
-        error: error.message,
-        details: error.details,
-      });
-    } else {
-      res.status(500).json({ error: 'Internal Server Error' });
-    }
+    next(error);
   }
 }
 
@@ -48,7 +41,6 @@ export function getRecordById(req: Request, res: Response, next: NextFunction): 
     res.status(200).json(record);
   } catch (error) {
     next(error);
-  }
 }
 
 /**
@@ -61,8 +53,7 @@ export function updateRecord(req: Request, res: Response, next: NextFunction): v
     const updatedRecord = TravelService.update(req.params.id, req.body);
     res.status(200).json(updatedRecord);
   } catch (error) {
-    next(error);
-  }
+   next(error)
 }
 
 /**
@@ -75,6 +66,5 @@ export function deleteRecord(req: Request, res: Response, next: NextFunction): v
     TravelService.delete(req.params.id);
     res.status(204).send();
   } catch (error) {
-    next(error);
-  }
+   next
 }
