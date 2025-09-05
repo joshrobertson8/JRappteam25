@@ -1,90 +1,106 @@
 import { TravelRecord } from '../models/travelRecord';
 import { HTTPError } from '../middleware/httpError';
 import { v4 as uuid } from 'uuid';
+import { TravelRecordInputSchema } from '../schemas/travelRecordSchema';
+import { flattenZodErrors } from '../utils/flattenZodErrors';
 
-let records: TravelRecord[] = [];
+/**
+ * Service class for managing travel records with CRUD operations.
+ * Handles validation, storage, and retrieval of travel data.
+ */
+export class TravelService {
+  private static records: TravelRecord[] = [];
 
-export function addRecord(data: Partial<TravelRecord>): TravelRecord {
-  console.log('addRecord API hit with data:', data);
+  /**
+   * Creates a new travel record after validating the input data.
+   * @param data - The input data for the new record (unknown type for validation).
+   * @returns The newly created TravelRecord.
+   * @throws HTTPError if validation fails.
+   */
+  static create(data: unknown): TravelRecord {
+    const validatedData = TravelRecordInputSchema.safeParse(data);
 
-  if (!data.destinationName || !data.country || !data.visitDate || !data.rating) {
-    throw new HTTPError('Missing required fields: destinationName, country, visitDate, rating ', 400);
-  }
+    if (!validatedData.success) {
+      const details = flattenZodErrors(validatedData.error);
+      throw new HTTPError('Validation error', 400, details);
+    }
 
-  // Type validations for required fields
-  if (typeof data.destinationName !== 'string') {
-    throw new HTTPError('Destination name must be a string', 400);
-  }
-  if (typeof data.country !== 'string') {
-    throw new HTTPError('Country must be a string', 400);
-  }
-  if (typeof data.visitDate !== 'string') {
-    throw new HTTPError('Visit date must be a string', 400);
-  }
-  if (typeof data.rating !== 'number') {
-    throw new HTTPError('Rating must be a number', 400);
-  }
+    const clean = validatedData.data;
 
-  if (data.rating < 1 || data.rating > 5) {
-    throw new HTTPError('Rating must be between 1 and 5', 400);
-  }
+    const newRecord: TravelRecord = {
+      id: uuid(),
+      destinationName: clean.destinationName,
+      country: clean.country,
+      visitDate: clean.visitDate,
+      rating: clean.rating,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
 
-  // Type validations for optional fields
-  if (data.userId && typeof data.userId !== 'string') {
-    throw new HTTPError('User ID must be a string', 400);
-  }
-  if (data.type && typeof data.type !== 'string') {
-    throw new HTTPError('Type must be a string', 400);
-  }
-  if (data.notes && typeof data.notes !== 'string') {
-    throw new HTTPError('Notes must be a string', 400);
-  }
-  if (data.imageUrl && typeof data.imageUrl !== 'string') {
-    throw new HTTPError('Image URL must be a string', 400);
-  }
-  if (data.mood && typeof data.mood !== 'string') {
-    throw new HTTPError('Mood must be a string', 400);
-  }
-  if (data.highlight && typeof data.highlight !== 'string') {
-    throw new HTTPError('Highlight must be a string', 400);
-  }
-  if (data.foodHighlight && typeof data.foodHighlight !== 'string') {
-    throw new HTTPError('Food highlight must be a string', 400);
-  }
-  if (data.bucketList !== undefined && typeof data.bucketList !== 'boolean') {
-    throw new HTTPError('Bucket list must be a boolean', 400);
-  }
-  if (data.emoji && typeof data.emoji !== 'string') {
-    throw new HTTPError('Emoji must be a string', 400);
+      // optional fields
+      type: clean.type,
+      notes: clean.notes,
+      imageUrl: clean.imageUrl,
+      mood: clean.mood,
+      highlight: clean.highlight,
+      foodHighlight: clean.foodHighlight,
+      bucketList: clean.bucketList,
+      emoji: clean.emoji,
+    };
+
+    this.records.push(newRecord);
+    return newRecord;
   }
 
-  const newRecord: TravelRecord = {
-    id: uuid(), // backend generates
-    userId: data.userId || 'guest', // default for now
-    destinationName: data.destinationName,
-    country: data.country,
-    visitDate: data.visitDate,
-    rating: data.rating,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
+  /**
+   * Retrieves all travel records.
+   * @returns An array of all TravelRecord objects.
+   */
+  static getAll(): TravelRecord[] {
+    return this.records;
+  }
 
-    // optional fields
-    type: data.type,
-    notes: data.notes,
-    imageUrl: data.imageUrl,
-    mood: data.mood,
-    highlight: data.highlight,
-    foodHighlight: data.foodHighlight,
-    bucketList: data.bucketList,
-    emoji: data.emoji,
-  };
+  /**
+   * Retrieves a specific travel record by its ID.
+   * @param id - The unique ID of the record.
+   * @returns The TravelRecord with the matching ID.
+   * @throws HTTPError if the record is not found.
+   */
+  static getById(id: string): TravelRecord {
+    const record = this.records.find((r) => r.id === id);
+    if (!record) {
+      throw new HTTPError('Record not found', 404);
+    }
+    return record;
+  }
 
-  records.push(newRecord);
-  console.log('Record added successfully:', newRecord);
-  return newRecord;
-}
+  /**
+   * Updates an existing travel record with new data after validation.
+   * @param id - The unique ID of the record to update.
+   * @param data - The updated data (unknown type for validation).
+   * @returns The updated TravelRecord.
+   * @throws HTTPError if the record is not found or validation fails.
+   */
+  static update(id: string, data: unknown): TravelRecord {
+    const record = this.getById(id);
+    const validatedData = TravelRecordInputSchema.partial().safeParse(data);
+    if (!validatedData.success) {
+      const details = flattenZodErrors(validatedData.error);
+      throw new HTTPError('Validation error', 400, details);
+    }
+    Object.assign(record, validatedData.data, { updatedAt: new Date().toISOString() });
+    return record;
+  }
 
-export function getRecords(): TravelRecord[] {
-  console.log('getRecords API hit, returning records:', records);
-  return records;
+  /**
+   * Deletes a travel record by its ID.
+   * @param id - The unique ID of the record to delete.
+   * @throws HTTPError if the record is not found.
+   */
+  static delete(id: string): void {
+    const index = this.records.findIndex((r) => r.id === id);
+    if (index === -1) {
+      throw new HTTPError('Record not found', 404);
+    }
+    this.records.splice(index, 1);
+  }
 }

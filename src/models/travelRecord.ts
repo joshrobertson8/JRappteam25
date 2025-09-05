@@ -1,6 +1,5 @@
 export interface TravelRecord {
   id: string;
-  userId: string;
   destinationName: string;
   country: string;
   visitDate: string;

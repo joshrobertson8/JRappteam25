@@ -1,0 +1,119 @@
+import { TravelService } from '../src/services/travelService';
+import { HTTPError } from '../src/middleware/httpError';
+
+describe('TravelService', () => {
+  beforeEach(() => {
+    (TravelService as any).records = [];
+  });
+
+  describe('create', () => {
+    it('should create a valid travel record', () => {
+      const data = {
+        destinationName: 'Paris',
+        country: 'France',
+        visitDate: '2023-07-15',
+        rating: 5,
+        notes: 'Amazing trip',
+      };
+
+      const record = TravelService.create(data);
+
+      expect(record).toHaveProperty('id');
+      expect(record.destinationName).toBe('Paris');
+      expect(record.country).toBe('France');
+      expect(record.rating).toBe(5);
+      expect(record).toHaveProperty('createdAt');
+      expect(record).toHaveProperty('updatedAt');
+    });
+
+    it('should throw error for invalid data', () => {
+      const invalidData = {
+        destinationName: '',
+        country: 'France',
+        visitDate: 'invalid-date',
+        rating: 6, // Invalid rating
+      };
+
+      expect(() => TravelService.create(invalidData)).toThrow(HTTPError);
+    });
+  });
+
+  describe('getAll', () => {
+    it('should return all records', () => {
+      const data1 = { destinationName: 'Paris', country: 'France', visitDate: '2023-07-15', rating: 5 };
+      const data2 = { destinationName: 'Tokyo', country: 'Japan', visitDate: '2023-08-20', rating: 4 };
+
+      TravelService.create(data1);
+      TravelService.create(data2);
+
+      const records = TravelService.getAll();
+      expect(records).toHaveLength(2);
+      expect(records[0].destinationName).toBe('Paris');
+      expect(records[1].destinationName).toBe('Tokyo');
+    });
+
+    it('should return empty array if no records', () => {
+      const records = TravelService.getAll();
+      expect(records).toEqual([]);
+    });
+  });
+
+  describe('getById', () => {
+    it('should return the record with matching ID', () => {
+      const data = { destinationName: 'Paris', country: 'France', visitDate: '2023-07-15', rating: 5 };
+      const created = TravelService.create(data);
+
+      const record = TravelService.getById(created.id);
+      expect(record.id).toBe(created.id);
+      expect(record.destinationName).toBe('Paris');
+    });
+
+    it('should throw error if record not found', () => {
+      expect(() => TravelService.getById('non-existent-id')).toThrow(HTTPError);
+      expect(() => TravelService.getById('non-existent-id')).toThrow('Record not found');
+    });
+  });
+
+  describe('update', () => {
+    it('should update the record with valid data', () => {
+      const data = { destinationName: 'Paris', country: 'France', visitDate: '2023-07-15', rating: 5 };
+      const created = TravelService.create(data);
+
+      const updateData = { rating: 4, notes: 'Updated notes' };
+      const updated = TravelService.update(created.id, updateData);
+
+      expect(updated.id).toBe(created.id);
+      expect(updated.rating).toBe(4);
+      expect(updated.notes).toBe('Updated notes');
+      expect(updated.updatedAt).toBeDefined();
+    });
+
+    it('should throw error if record not found', () => {
+      expect(() => TravelService.update('non-existent-id', { rating: 3 })).toThrow(HTTPError);
+    });
+
+    it('should throw error for invalid update data', () => {
+      const data = { destinationName: 'Paris', country: 'France', visitDate: '2023-07-15', rating: 5 };
+      const created = TravelService.create(data);
+
+      expect(() => TravelService.update(created.id, { rating: 10 })).toThrow(HTTPError); // Invalid rating
+    });
+  });
+
+  describe('delete', () => {
+    it('should delete the record with matching ID', () => {
+      const data = { destinationName: 'Paris', country: 'France', visitDate: '2023-07-15', rating: 5 };
+      const created = TravelService.create(data);
+
+      TravelService.delete(created.id);
+
+      expect(() => TravelService.getById(created.id)).toThrow(HTTPError);
+      expect(TravelService.getAll()).toHaveLength(0);
+    });
+
+    it('should throw error if record not found', () => {
+      expect(() => TravelService.delete('non-existent-id')).toThrow(HTTPError);
+      expect(() => TravelService.delete('non-existent-id')).toThrow('Record not found');
+    });
+  });
+});
