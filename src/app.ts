@@ -4,10 +4,8 @@ import { HTTPError } from './middleware/httpError';
 
 const app = express();
 
-// Middleware
 app.use(express.json());
 
-// Routes
 app.use('/api/travel-records', travelRoutes);
 
 app.use((error: any, req: Request, res: Response) => {

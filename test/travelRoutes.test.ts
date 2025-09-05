@@ -36,7 +36,6 @@ describe('Travel Routes Integration', () => {
 
   describe('GET /api/travel-records', () => {
     it('should return all records', async () => {
-      // First create a record
       await request(app).post('/api/travel-records').send({
         destinationName: 'Tokyo',
         country: 'Japan',
@@ -101,7 +100,6 @@ describe('Travel Routes Integration', () => {
       const id = createResponse.body.id;
       await request(app).delete(`/api/travel-records/${id}`).expect(204);
 
-      // Verify deletion
       await request(app).get(`/api/travel-records/${id}`).expect(404);
     });
   });

@@ -31,7 +31,7 @@ describe('TravelService', () => {
         destinationName: '',
         country: 'France',
         visitDate: 'invalid-date',
-        rating: 6, // Invalid rating
+        rating: 6,
       };
 
       expect(() => TravelService.create(invalidData)).toThrow(HTTPError);
@@ -96,7 +96,7 @@ describe('TravelService', () => {
       const data = { destinationName: 'Paris', country: 'France', visitDate: '2023-07-15', rating: 5 };
       const created = TravelService.create(data);
 
-      expect(() => TravelService.update(created.id, { rating: 10 })).toThrow(HTTPError); // Invalid rating
+      expect(() => TravelService.update(created.id, { rating: 10 })).toThrow(HTTPError);
     });
   });
 
