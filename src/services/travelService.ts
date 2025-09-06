@@ -4,10 +4,6 @@ import { v4 as uuid } from 'uuid';
 import { TravelRecordInputSchema } from '../schemas/travelRecordSchema';
 import { flattenZodErrors } from '../utils/flattenZodErrors';
 
-/**
- * Service class for managing travel records with CRUD operations.
- * Handles validation, storage, and retrieval of travel data.
- */
 export class TravelService {
   private static records: TravelRecord[] = [];
 
