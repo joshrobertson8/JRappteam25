@@ -19,6 +19,7 @@ export const TravelRecordSchema = TravelRecordInputSchema.extend({
   id: z.string(),
   createdAt: z.string(),
   updatedAt: z.string(),
+  weather: z.string().optional(),
 });
 
 export type TravelRecord = z.infer<typeof TravelRecordSchema>;

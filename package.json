@@ -23,6 +23,7 @@
   "homepage": "https://github.com/joshrobertson8/JRappteam25#readme",
   "dependencies": {
     "@types/express": "^5.0.3",
+    "dotenv": "^17.2.2",
     "express": "^5.1.0",
     "swagger-ui-express": "^5.0.1",
     "uuid": "^11.1.0",

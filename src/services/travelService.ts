@@ -9,11 +9,13 @@ export class TravelService {
 
   /**
    * Creates a new travel record after validating the input data.
+   * Optionally fetches current weather data if the `weather` flag is true.
    * @param data - The input data for the new record (unknown type for validation).
+   * @param weather - Boolean flag to include current weather data.
    * @returns The newly created TravelRecord.
-   * @throws HTTPError if validation fails.
+   * @throws HTTPError if validation fails or weather fetch fails.
    */
-  static create(data: unknown): TravelRecord {
+  static async create(data: unknown, weather: boolean = false): Promise<TravelRecord> {
     const validatedData = TravelRecordInputSchema.safeParse(data);
 
     if (!validatedData.success) {
@@ -22,6 +24,26 @@ export class TravelService {
     }
 
     const clean = validatedData.data;
+    let currentWeather: string | undefined;
+
+    if (weather) {
+      try {
+        const res = await fetch(
+          `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(
+            `${clean.destinationName},${clean.country}`
+          )}&appid=${process.env.OPENWEATHER_API_KEY}&units=metric`
+        );
+
+        if (!res.ok) {
+          throw new Error(`OpenWeather API error: ${res.statusText}`);
+        }
+
+        const weatherData = await res.json();
+        currentWeather = weatherData.weather?.[0]?.description;
+      } catch (err) {
+        throw new HTTPError('Failed to fetch weather data', 502, err);
+      }
+    }
 
     const newRecord: TravelRecord = {
       id: uuid(),
@@ -41,6 +63,7 @@ export class TravelService {
       foodHighlight: clean.foodHighlight,
       bucketList: clean.bucketList,
       emoji: clean.emoji,
+      weather: currentWeather,
     };
 
     this.records.push(newRecord);
@@ -64,7 +87,9 @@ export class TravelService {
   static get(id: string): TravelRecord {
     const record = this.records.find((r) => r.id === id);
     if (!record) {
-      throw new HTTPError('Record not found', 404, { message: 'No record found with the provided ID' });
+      throw new HTTPError('Record not found', 404, {
+        message: 'No record found with the provided ID',
+      });
     }
     return record;
   }
@@ -79,11 +104,16 @@ export class TravelService {
   static update(id: string, data: unknown): TravelRecord {
     const record = this.get(id);
     const validatedData = TravelRecordInputSchema.partial().safeParse(data);
+
     if (!validatedData.success) {
       const details = flattenZodErrors(validatedData.error);
       throw new HTTPError('Validation error', 400, details);
     }
-    Object.assign(record, validatedData.data, { updatedAt: new Date().toISOString() });
+
+    Object.assign(record, validatedData.data, {
+      updatedAt: new Date().toISOString(),
+    });
+
     return record;
   }
 
@@ -95,7 +125,9 @@ export class TravelService {
   static delete(id: string): void {
     const index = this.records.findIndex((r) => r.id === id);
     if (index === -1) {
-      throw new HTTPError('Record not found', 404, { message: 'No record found with the provided ID' });
+      throw new HTTPError('Record not found', 404, {
+        message: 'No record found with the provided ID',
+      });
     }
     this.records.splice(index, 1);
   }

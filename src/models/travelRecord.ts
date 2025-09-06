@@ -16,4 +16,5 @@ export interface TravelRecord {
   foodHighlight?: string;
   bucketList?: boolean;
   emoji?: string;
+  weather?: string;
 }

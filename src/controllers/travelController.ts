@@ -7,9 +7,10 @@ import { HTTPError } from '../middleware/httpError';
  * @param req - Express request object containing the record data in body.
  * @param res - Express response object.
  */
-export function createRecord(req: Request, res: Response, next: NextFunction): void {
+export async function createRecord(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
-    const newRecord = TravelService.create(req.body);
+    const includeWeather = req.query.weather === 'true';
+    const newRecord = await TravelService.create(req.body, includeWeather);
     res.status(201).json(newRecord);
   } catch (error) {
     next(error);

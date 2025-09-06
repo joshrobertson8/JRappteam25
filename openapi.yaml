@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Travel Journal API
-  description: A REST API for managing travel journal records with full CRUD operations, Zod validation, and comprehensive error handling
+  description: App Team Carolina backend take home Josh Robertson 2025
   version: 1.0.0
   contact:
     name: Travel Journal API Support
@@ -14,6 +14,21 @@ servers:
     description: Development server
 
 paths:
+  /api-docs:
+    get:
+      summary: API Documentation
+      description: Swagger UI documentation for the Travel Journal API
+      tags:
+        - Documentation
+      responses:
+        '200':
+          description: Swagger UI documentation page
+          content:
+            text/html:
+              schema:
+                type: string
+                description: HTML page with Swagger UI
+
   /api/travel-records:
     get:
       summary: Get all travel records
@@ -38,9 +53,17 @@ paths:
 
     post:
       summary: Create a new travel record
-      description: Create a new travel record with validation
+      description: Create a new travel record with validation. Optionally fetch current weather data for the destination.
       tags:
         - Travel Records
+      parameters:
+        - name: weather
+          in: query
+          required: false
+          description: Include current weather data for the destination (requires OpenWeather API key)
+          schema:
+            type: boolean
+            default: false
       requestBody:
         required: true
         content:
@@ -60,6 +83,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ValidationError'
+        '502':
+          description: Weather API error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WeatherAPIError'
         '500':
           description: Internal server error
           content:
@@ -250,6 +279,10 @@ components:
           type: string
           description: Emoji representing the trip (optional)
           example: '✈️'
+        weather:
+          type: string
+          description: Current weather description (optional, fetched when weather=true)
+          example: 'clear sky'
 
     TravelRecordInput:
       type: object
@@ -406,3 +439,16 @@ components:
         error:
           type: string
           example: 'Internal Server Error'
+
+    WeatherAPIError:
+      type: object
+      properties:
+        error:
+          type: string
+          example: 'Failed to fetch weather data'
+        details:
+          type: object
+          properties:
+            message:
+              type: string
+              example: 'Weather API request failed'
