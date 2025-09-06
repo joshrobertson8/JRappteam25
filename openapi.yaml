@@ -1,0 +1,408 @@
+openapi: 3.0.3
+info:
+  title: Travel Journal API
+  description: A REST API for managing travel journal records with full CRUD operations, Zod validation, and comprehensive error handling
+  version: 1.0.0
+  contact:
+    name: Travel Journal API Support
+    url: https://github.com/joshrobertson8/JRappteam25
+  license:
+    name: ISC
+
+servers:
+  - url: http://localhost:4000
+    description: Development server
+
+paths:
+  /api/travel-records:
+    get:
+      summary: Get all travel records
+      description: Retrieve a list of all travel records
+      tags:
+        - Travel Records
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TravelRecord'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    post:
+      summary: Create a new travel record
+      description: Create a new travel record with validation
+      tags:
+        - Travel Records
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TravelRecordInput'
+      responses:
+        '201':
+          description: Travel record created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelRecord'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/travel-records/{id}:
+    get:
+      summary: Get a travel record by ID
+      description: Retrieve a specific travel record by its ID
+      tags:
+        - Travel Records
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the travel record
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Travel record found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelRecord'
+        '404':
+          description: Travel record not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundError'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    patch:
+      summary: Update a travel record
+      description: Update an existing travel record with partial data
+      tags:
+        - Travel Records
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the travel record to update
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TravelRecordUpdate'
+      responses:
+        '200':
+          description: Travel record updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelRecord'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+        '404':
+          description: Travel record not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundError'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    delete:
+      summary: Delete a travel record
+      description: Delete a travel record by its ID
+      tags:
+        - Travel Records
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the travel record to delete
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Travel record deleted successfully
+        '404':
+          description: Travel record not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundError'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  schemas:
+    TravelRecord:
+      type: object
+      required:
+        - id
+        - destinationName
+        - country
+        - visitDate
+        - rating
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the travel record
+          example: 'af4efa4b-966f-44d2-8b32-32bafe88fd23'
+        destinationName:
+          type: string
+          description: Name of the destination
+          example: 'Paris'
+        country:
+          type: string
+          description: Country of the destination
+          example: 'France'
+        visitDate:
+          type: string
+          description: Date of the visit (ISO format)
+          example: '2023-07-15'
+        rating:
+          type: integer
+          minimum: 1
+          maximum: 5
+          description: Rating from 1 to 5
+          example: 5
+        createdAt:
+          type: string
+          format: date-time
+          description: Record creation timestamp
+          example: '2025-09-06T00:52:40.468Z'
+        updatedAt:
+          type: string
+          format: date-time
+          description: Record last update timestamp
+          example: '2025-09-06T00:52:40.468Z'
+        type:
+          type: string
+          description: Type of travel (optional)
+          example: 'vacation'
+        notes:
+          type: string
+          description: Additional notes (optional)
+          example: 'Amazing trip with great food'
+        imageUrl:
+          type: string
+          format: uri
+          description: URL to an image (optional)
+          example: 'https://example.com/image.jpg'
+        mood:
+          type: string
+          description: Mood during the trip (optional)
+          example: 'excited'
+        highlight:
+          type: string
+          description: Trip highlight (optional)
+          example: 'Eiffel Tower at sunset'
+        foodHighlight:
+          type: string
+          description: Favorite food experience (optional)
+          example: 'Croissants from local bakery'
+        bucketList:
+          type: boolean
+          description: Whether this was on the bucket list (optional)
+          example: true
+        emoji:
+          type: string
+          description: Emoji representing the trip (optional)
+          example: '✈️'
+
+    TravelRecordInput:
+      type: object
+      required:
+        - destinationName
+        - country
+        - visitDate
+        - rating
+      properties:
+        destinationName:
+          type: string
+          description: Name of the destination
+          example: 'Paris'
+        country:
+          type: string
+          description: Country of the destination
+          example: 'France'
+        visitDate:
+          type: string
+          description: Date of the visit (ISO format)
+          example: '2023-07-15'
+        rating:
+          type: integer
+          minimum: 1
+          maximum: 5
+          description: Rating from 1 to 5
+          example: 5
+        type:
+          type: string
+          description: Type of travel (optional)
+          example: 'vacation'
+        notes:
+          type: string
+          description: Additional notes (optional)
+          example: 'Amazing trip with great food'
+        imageUrl:
+          type: string
+          format: uri
+          description: URL to an image (optional)
+          example: 'https://example.com/image.jpg'
+        mood:
+          type: string
+          description: Mood during the trip (optional)
+          example: 'excited'
+        highlight:
+          type: string
+          description: Trip highlight (optional)
+          example: 'Eiffel Tower at sunset'
+        foodHighlight:
+          type: string
+          description: Favorite food experience (optional)
+          example: 'Croissants from local bakery'
+        bucketList:
+          type: boolean
+          description: Whether this was on the bucket list (optional)
+          example: true
+        emoji:
+          type: string
+          description: Emoji representing the trip (optional)
+          example: '✈️'
+
+    TravelRecordUpdate:
+      type: object
+      description: All fields are optional for partial updates
+      properties:
+        destinationName:
+          type: string
+          description: Name of the destination
+          example: 'Paris'
+        country:
+          type: string
+          description: Country of the destination
+          example: 'France'
+        visitDate:
+          type: string
+          description: Date of the visit (ISO format)
+          example: '2023-07-15'
+        rating:
+          type: integer
+          minimum: 1
+          maximum: 5
+          description: Rating from 1 to 5
+          example: 5
+        type:
+          type: string
+          description: Type of travel (optional)
+          example: 'vacation'
+        notes:
+          type: string
+          description: Additional notes (optional)
+          example: 'Amazing trip with great food'
+        imageUrl:
+          type: string
+          format: uri
+          description: URL to an image (optional)
+          example: 'https://example.com/image.jpg'
+        mood:
+          type: string
+          description: Mood during the trip (optional)
+          example: 'excited'
+        highlight:
+          type: string
+          description: Trip highlight (optional)
+          example: 'Eiffel Tower at sunset'
+        foodHighlight:
+          type: string
+          description: Favorite food experience (optional)
+          example: 'Croissants from local bakery'
+        bucketList:
+          type: boolean
+          description: Whether this was on the bucket list (optional)
+          example: true
+        emoji:
+          type: string
+          description: Emoji representing the trip (optional)
+          example: '✈️'
+
+    ValidationError:
+      type: object
+      properties:
+        error:
+          type: string
+          example: 'Validation error'
+        details:
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+                description: The field that failed validation
+                example: 'rating'
+              message:
+                type: string
+                description: The validation error message
+                example: 'Too big: expected number to be <=5'
+
+    NotFoundError:
+      type: object
+      properties:
+        error:
+          type: string
+          example: 'Record not found'
+        details:
+          type: object
+          properties:
+            message:
+              type: string
+              example: 'No record found with the provided ID'
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          example: 'Internal Server Error'

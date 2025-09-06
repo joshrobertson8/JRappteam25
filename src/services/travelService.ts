@@ -68,7 +68,7 @@ export class TravelService {
   static get(id: string): TravelRecord {
     const record = this.records.find((r) => r.id === id);
     if (!record) {
-      throw new HTTPError('Record not found', 404);
+      throw new HTTPError('Record not found', 404, { message: 'No record found with the provided ID' });
     }
     return record;
   }
@@ -99,7 +99,7 @@ export class TravelService {
   static delete(id: string): void {
     const index = this.records.findIndex((r) => r.id === id);
     if (index === -1) {
-      throw new HTTPError('Record not found', 404);
+      throw new HTTPError('Record not found', 404, { message: 'No record found with the provided ID' });
     }
     this.records.splice(index, 1);
   }
