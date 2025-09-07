@@ -338,3 +338,67 @@ open http://localhost:4000/api-docs
 ---
 
 _"This project represents my approach to building production-ready APIs with careful consideration of user experience, maintainability, and scalability. Every design decision was made with the end user and fellow developers in mind."_
+
+---
+
+## 🧪 Tests
+
+- Run tests: `npm test`
+- Stack: Jest + Supertest (`test/*.ts`)
+- Coverage focus: service logic, validation errors, route integration (create/list/get/update/delete).
+- Example: `test/travelService.test.ts` resets in‑memory store before each test to ensure isolation.
+
+---
+
+## ⚙️ Environment & Config
+
+- `PORT` (default `4000`)
+- `OPENWEATHER_API_KEY` (optional; required only when using `?weather=true`)
+- `.env` is loaded via `dotenv` (`src/server.ts` → `import 'dotenv/config'`).
+
+---
+
+## 🌐 OpenAPI Docs (Swagger UI)
+
+- Spec: `openapi.yaml` (OpenAPI 3.0)
+- Served at: `/api-docs` via `swagger-ui-express` and `yamljs` (`src/routes/docs.ts`).
+- Use as a live contract during the demo; try endpoints directly in the browser.
+
+---
+
+## 🧭 Postman/Insomnia Demo Plan (10–12 mins)
+
+1. Create record without weather (201). Highlight validation and response shape.
+2. Create record with weather (201; `?weather=true`). Note optional enrichment and error handling.
+3. List records (200). Show array growth and consistent fields.
+4. Get record by id (200). Copy id from previous step; show 404 for unknown id.
+5. Update record (PATCH 200). Partial update; show `updatedAt` change.
+6. Delete record (204). Verify subsequent GET returns 404.
+7. Open `/api-docs` to showcase OpenAPI as a living contract.
+
+Tip: Add a Postman environment variable `baseUrl = http://localhost:4000` and a collection with:
+- `POST {{baseUrl}}/api/travel-records`
+- `GET {{baseUrl}}/api/travel-records`
+- `GET {{baseUrl}}/api/travel-records/:id`
+- `PATCH {{baseUrl}}/api/travel-records/:id`
+- `DELETE {{baseUrl}}/api/travel-records/:id`
+
+---
+
+## 🧩 Limitations (By Design for the Take‑Home)
+
+- In‑memory storage (no persistence) to focus on API design and correctness.
+- No authentication/authorization implemented.
+- No rate limiting or request logging in this version.
+
+All of the above are planned in the “What’s Next” section and the architecture cleanly supports adding them.
+
+---
+
+## 🧠 Backend In The Product Process (How I Think)
+
+- Design for consumers: start with use‑cases, sketch API shapes, write OpenAPI early.
+- Iterate with docs: keep `/api-docs` as the single source of truth.
+- Test the contract: integration tests for happy paths and edge cases.
+- Plan for change: decouple services to swap in DB/auth/caching later without churn.
+- Operability: standard error shapes (`HTTPError`), logs, and metrics as first‑class concerns when moving to prod.
