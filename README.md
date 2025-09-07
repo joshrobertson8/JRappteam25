@@ -80,3 +80,90 @@ A:
 - Authentication
 - File uploads for attaching photos.
 - Aggregated analytics (average ratings by country).
+
+**Q: How do I run and test the API with Postman?**  
+A:
+
+**1. Start the development server:**
+
+```bash
+npm install
+npm run dev
+```
+
+Server will run on http://localhost:4000
+
+**2. Set up Postman:**
+
+- Create a new collection called "Travel Records API"
+- Set base URL to `http://localhost:4000`
+
+**3. Test the endpoints:**
+
+**Create a record (POST):**
+
+- Method: POST
+- URL: `{{base_url}}/api/travel-records`
+- Headers: `Content-Type: application/json`
+- Body (raw JSON):
+
+```json
+{
+  "destinationName": "Paris",
+  "country": "France",
+  "visitDate": "2023-07-15",
+  "rating": 5,
+  "notes": "Amazing trip!",
+  "type": "vacation"
+}
+```
+
+**Create with weather (POST):**
+
+- Method: POST
+- URL: `{{base_url}}/api/travel-records?weather=true`
+- Headers: `Content-Type: application/json`
+- Body: Same as above
+- Note: Requires `OPENWEATHER_API_KEY` in `.env`
+
+**Get all records (GET):**
+
+- Method: GET
+- URL: `{{base_url}}/api/travel-records`
+
+**Get specific record (GET):**
+
+- Method: GET
+- URL: `{{base_url}}/api/travel-records/{id}`
+- Replace `{id}` with actual UUID from previous response
+
+**Update a record (PATCH):**
+
+- Method: PATCH
+- URL: `{{base_url}}/api/travel-records/{id}`
+- Headers: `Content-Type: application/json`
+- Body (raw JSON):
+
+```json
+{
+  "rating": 4,
+  "notes": "Updated notes"
+}
+```
+
+**Delete a record (DELETE):**
+
+- Method: DELETE
+- URL: `{{base_url}}/api/travel-records/{id}`
+
+**4. Test error scenarios:**
+
+- Try invalid rating (6 or 0)
+- Try invalid date format ("2023/07/15")
+- Try non-existent ID
+- Try missing required fields
+
+**5. View API documentation:**
+
+- Open http://localhost:4000/api-docs in browser
+- Interactive Swagger UI with all endpoints
