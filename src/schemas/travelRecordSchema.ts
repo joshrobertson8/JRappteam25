@@ -3,7 +3,15 @@ import { z } from 'zod';
 export const TravelRecordInputSchema = z.object({
   destinationName: z.string(),
   country: z.string(),
-  visitDate: z.string(),
+  visitDate: z.string().refine(
+    (date) => {
+      const parsed = new Date(date);
+      return !isNaN(parsed.getTime()) && date === parsed.toISOString().split('T')[0];
+    },
+    {
+      message: 'Invalid date format. Use YYYY-MM-DD format.',
+    }
+  ),
   rating: z.number().min(1).max(5),
   type: z.string().optional(),
   notes: z.string().optional(),
