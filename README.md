@@ -2,7 +2,7 @@
 
 ## Presentation Overview
 
-This README is the project presentation for the App Team Carolina Backend Developer take‑home. It explains implementation choices, tradeoffs, and how to demo the API.
+Josh Robertson 2025
 
 ---
 
