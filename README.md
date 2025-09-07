@@ -12,7 +12,7 @@ A:
 - `DELETE /api/travel-records/:id` → delete a record by ID.
 
 **Q: What do request and response formats look like?**  
-A: For example, creating a record with weather enrichment:
+A: For example, creating a record with weather:
 
 `POST /api/travel-records?weather=true`
 
@@ -60,10 +60,9 @@ A:
 **Q: How did you choose the endpoint structure?**  
 A:
 
-- Base resource `/api/travel-records` for clarity.
+- Base resource `/api/travel-records`
 - Path parameters (`:id`) for specific records.
-- Query parameters (`?weather=true`) for optional enrichment.
-- Avoided nested resources since this is a single-user app.
+- Query parameters (`?weather=true`)
 - Didn't add versioning yet, but could add `/api/v1` later if needed.
 
 **Q: Why did you make the choices you did (stack, tools, design)?**  
@@ -72,14 +71,12 @@ A:
 - TypeScript for type safety and better developer experience.
 - Zod for unified validation and error messages.
 - Layered architecture (controllers → services → models) for maintainability.
-- Fail-fast philosophy: reject invalid data immediately with clear error responses.
+- Custom standardized error formatting
 
 **Q: What would you add if you had more time?**  
 A:
 
 - Database integration (PostgreSQL or MongoDB).
-- Authentication and authorization for multiple users.
-- Filtering and search capabilities.
+- Authentication
 - File uploads for attaching photos.
 - Aggregated analytics (average ratings by country).
-- Production-level improvements: logging, rate limiting, Docker, CI/CD.
