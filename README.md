@@ -377,6 +377,7 @@ _"This project represents my approach to building production-ready APIs with car
 7. Open `/api-docs` to showcase OpenAPI as a living contract.
 
 Tip: Add a Postman environment variable `baseUrl = http://localhost:4000` and a collection with:
+
 - `POST {{baseUrl}}/api/travel-records`
 - `GET {{baseUrl}}/api/travel-records`
 - `GET {{baseUrl}}/api/travel-records/:id`
