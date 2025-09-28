@@ -1,6 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
 import { TravelService } from '../services/travelService';
-import { HTTPError } from '../middleware/httpError';
 
 /**
  * Creates a new travel record.

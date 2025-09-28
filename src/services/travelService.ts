@@ -91,6 +91,7 @@ export class TravelService {
         message: 'No record found with the provided ID',
       });
     }
+
     return record;
   }
 
@@ -129,6 +130,7 @@ export class TravelService {
         message: 'No record found with the provided ID',
       });
     }
+
     this.records.splice(index, 1);
   }
 }
