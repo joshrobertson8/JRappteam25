@@ -1,7 +1,6 @@
-import { TravelRecord } from './model';
 import { HTTPError } from '../../middleware/httpError';
 import { v4 as uuid } from 'uuid';
-import { TravelRecordInputSchema } from './schema';
+import { TravelRecord, TravelRecordInputSchema } from './schema';
 import { flattenZodErrors } from '../../utils/flattenZodErrors';
 
 export class TravelService {

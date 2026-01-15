@@ -1,7 +1,7 @@
-import express, { Request, Response, NextFunction } from 'express';
-import travelRoutes from './modules/travel/routes';
-import { HTTPError } from './middleware/httpError';
-import { setupDocs } from './routes/docs';
+import express from 'express';
+import { travelRoutes } from './modules/travel';
+import { setupDocs } from './docs';
+import { errorHandler } from './middleware/errorHandler';
 
 const app = express();
 
@@ -11,15 +11,6 @@ app.use('/api/travel-records', travelRoutes);
 
 setupDocs(app);
 
-app.use((error: any, req: Request, res: Response, next: NextFunction) => {
-  if (error instanceof HTTPError) {
-    res.status(error.statusCode).json({
-      error: error.message,
-      details: error.details,
-    });
-  } else {
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
-});
+app.use(errorHandler);
 
 export default app;
