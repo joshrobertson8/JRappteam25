@@ -1,6 +1,6 @@
 import request from 'supertest';
 import express from 'express';
-import travelRoutes from '../src/routes/travelRoutes';
+import travelRoutes from '../src/modules/travel/routes';
 
 const app = express();
 app.use(express.json());

@@ -1,5 +1,5 @@
 import express, { Request, Response, NextFunction } from 'express';
-import travelRoutes from './routes/travelRoutes';
+import travelRoutes from './modules/travel/routes';
 import { HTTPError } from './middleware/httpError';
 import { setupDocs } from './routes/docs';
 

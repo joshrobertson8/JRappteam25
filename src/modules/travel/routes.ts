@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { createRecord, getRecord, updateRecord, listRecords, deleteRecord } from '../controllers/travelController';
+import { createRecord, getRecord, updateRecord, listRecords, deleteRecord } from './controller';
 
 const router = Router();
 

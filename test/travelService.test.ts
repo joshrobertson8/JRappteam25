@@ -1,4 +1,4 @@
-import { TravelService } from '../src/services/travelService';
+import { TravelService } from '../src/modules/travel/service';
 import { HTTPError } from '../src/middleware/httpError';
 
 describe('TravelService', () => {

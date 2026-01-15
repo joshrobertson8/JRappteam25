@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-import { TravelService } from '../services/travelService';
+import { TravelService } from './service';
 
 /**
  * Creates a new travel record.
