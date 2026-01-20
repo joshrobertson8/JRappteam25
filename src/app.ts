@@ -1,5 +1,5 @@
 import express from 'express';
-import { travelRoutes } from './modules/travel';
+import travelRoutes from './modules/travel/routes';
 import { setupDocs } from './docs';
 import { errorHandler } from './middleware/errorHandler';
 
